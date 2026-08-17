@@ -1,0 +1,52 @@
+{
+  "name": "music-discographies",
+  "version": "0.1.0",
+  "description": "Structured discography data for multiple artists, with a static browser.",
+  "private": true,
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "build:gh": "ng build --base-href /music-discographies/ && node scripts/copy-404.mjs",
+    "validate": "node scripts/validate-data.mjs",
+    "db:export": "node scripts/to-sqlite.mjs",
+    "types:gen": "node scripts/gen-types.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.4",
+    "@angular/cli": "^22.1.4",
+    "@angular/compiler-cli": "^22.1.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "husky": "^9.1.7",
+    "json-schema-to-typescript": "^15.0.4",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2"
+  },
+  "lint-staged": {
+    "src/assets/data/**/*.json": [
+      "prettier --write",
+      "node scripts/validate-data.mjs"
+    ],
+    "*.{ts,html,css,json,md,mjs,yml}": [
+      "prettier --write"
+    ]
+  }
+}

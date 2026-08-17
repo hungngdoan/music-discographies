@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hungngdoan.github.io/music-discographies/schemas/index.schema.json",
+  "title": "ArtistIndex",
+  "description": "Registry of every artist file. Loaded first; the artist list page renders straight from it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["updated", "artists"],
+  "properties": {
+    "updated": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO 8601 date the registry itself was last revised."
+    },
+    "artists": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ArtistIndexEntry" }
+    }
+  },
+  "$defs": {
+    "ArtistIndexEntry": {
+      "title": "ArtistIndexEntry",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "sortName", "origin", "active", "songCount", "file"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Must equal the artist.id inside the referenced file."
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "sortName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name to sort by, for example \"Beatles, The\"."
+        },
+        "origin": { "type": "string", "minLength": 1 },
+        "active": { "type": "string", "minLength": 1 },
+        "songCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Must equal songs.length in the referenced file. Checked by scripts/validate-data.mjs."
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*\\.json$",
+          "description": "Filename relative to src/assets/data/."
+        }
+      }
+    }
+  }
+}

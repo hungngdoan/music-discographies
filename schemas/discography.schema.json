@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hungngdoan.github.io/music-discographies/schemas/discography.schema.json",
+  "title": "Discography",
+  "description": "One artist's complete catalogue. One file per artist, loaded at runtime from src/assets/data/{id}.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artist", "eras", "albums", "songs"],
+  "properties": {
+    "artist": { "$ref": "#/$defs/Artist" },
+    "eras": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Era" }
+    },
+    "albums": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Album" }
+    },
+    "songs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Song" }
+    }
+  },
+  "$defs": {
+    "Slug": {
+      "title": "Slug",
+      "description": "Lowercase kebab-case identifier. Unique within its collection in a single artist file.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "ArtistId": {
+      "title": "ArtistId",
+      "description": "Artist slug. Must equal the filename stem and the matching index.json entry id.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "SongId": {
+      "title": "SongId",
+      "description": "Song slug, unique within the file. Titles that collide are disambiguated with a year suffix, for example closer-2004 and closer-2025.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "ReleaseType": {
+      "title": "ReleaseType",
+      "description": "Shared vocabulary for albums[].type and songs[].type.",
+      "type": "string",
+      "enum": [
+        "studio",
+        "deluxe",
+        "reissue",
+        "compilation",
+        "ep",
+        "live",
+        "soundtrack",
+        "single",
+        "remix",
+        "demo",
+        "unreleased",
+        "album-track"
+      ]
+    },
+    "Confidence": {
+      "title": "Confidence",
+      "description": "How well verified this record is. See docs/SCHEMA.md for what each level means.",
+      "type": "string",
+      "enum": ["high", "medium", "low", "unverified"]
+    },
+    "Artist": {
+      "title": "Artist",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "aliases", "origin", "active", "genres", "updated", "scopeNotes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ArtistId" },
+        "name": { "type": "string", "minLength": 1 },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Other names the act has recorded under. Empty array if none."
+        },
+        "origin": { "type": "string", "minLength": 1 },
+        "active": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free text, for example \"1994-present\"."
+        },
+        "genres": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "updated": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO 8601 date this file was last revised."
+        },
+        "scopeNotes": {
+          "type": "string",
+          "description": "What this dataset includes and excludes. Shown on the artist page."
+        }
+      }
+    },
+    "Era": {
+      "title": "Era",
+      "description": "A named period in the artist's history. Songs and albums reference an era by id.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "range"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Slug" },
+        "label": { "type": "string", "minLength": 1 },
+        "range": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free text, for example \"2002-present\"."
+        }
+      }
+    },
+    "Album": {
+      "title": "Album",
+      "description": "Any release a song can appear on: studio albums, editions, compilations, soundtracks, demo sets.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "type", "year", "era"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Slug" },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Exact title. Every string in songs[].albums must match one of these exactly."
+        },
+        "type": { "$ref": "#/$defs/ReleaseType" },
+        "released": {
+          "type": "string",
+          "format": "date",
+          "description": "Full ISO 8601 release date. Omit the key entirely when only the year is known."
+        },
+        "year": {
+          "type": ["integer", "null"],
+          "minimum": 1900,
+          "maximum": 2100,
+          "description": "Release year, or null for material that was never released."
+        },
+        "era": { "$ref": "#/$defs/Slug" }
+      }
+    },
+    "Song": {
+      "title": "Song",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "albums",
+        "year",
+        "type",
+        "era",
+        "features",
+        "isCover",
+        "originalArtist",
+        "confidence",
+        "notes"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/SongId" },
+        "title": { "type": "string", "minLength": 1 },
+        "albums": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Always an array, even for a single album. Empty for non-album singles and unreleased material. Each entry must match an albums[].title exactly."
+        },
+        "year": {
+          "type": ["integer", "null"],
+          "minimum": 1900,
+          "maximum": 2100,
+          "description": "Year of FIRST commercial release, which may precede the parent album's year. Null when never released."
+        },
+        "type": { "$ref": "#/$defs/ReleaseType" },
+        "era": { "$ref": "#/$defs/Slug" },
+        "features": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Guest artists credited on the release. Empty array if none."
+        },
+        "isCover": { "type": "boolean" },
+        "originalArtist": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "description": "Must be null when isCover is false. May be null for a cover whose original performer is not recorded."
+        },
+        "confidence": { "$ref": "#/$defs/Confidence" },
+        "notes": {
+          "type": "string",
+          "description": "Free text. Empty string when there is nothing to say."
+        }
+      }
+    }
+  }
+}

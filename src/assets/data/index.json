@@ -1,0 +1,14 @@
+{
+  "updated": "2026-08-17",
+  "artists": [
+    {
+      "id": "maroon-5",
+      "name": "Maroon 5",
+      "sortName": "Maroon 5",
+      "origin": "Los Angeles, California, US",
+      "active": "1994-present",
+      "songCount": 215,
+      "file": "maroon-5.json"
+    }
+  ]
+}
