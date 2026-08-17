@@ -141,3 +141,16 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Angular
+/dist/
+/.angular/
+/tmp/
+.angular/cache
+
+# Generated SQLite export (see scripts/to-sqlite.mjs)
+/build/
+
+# IDE
+.idea/
+*.iml

@@ -1,0 +1,344 @@
+/* ---------------------------------------------------------------- header */
+
+.crumb {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.artist-header h1 {
+  margin: 0;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.75rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.875rem;
+}
+
+.facts > div {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.facts dt {
+  color: var(--text-muted);
+}
+
+.facts dt::after {
+  content: ':';
+}
+
+.facts dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.scope {
+  margin: 1.15rem 0 0;
+  font-size: 0.875rem;
+}
+
+.scope summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-weight: 550;
+}
+
+.scope summary:hover {
+  color: var(--text);
+}
+
+.scope p {
+  max-width: 82ch;
+  margin: 0.6rem 0 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* -------------------------------------------------------------- controls */
+
+.controls {
+  margin: 2rem 0 1.25rem;
+  padding: 1.15rem 1.25rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.controls__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.85rem 1rem;
+}
+
+.field--wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 44rem) {
+  .field--wide {
+    grid-column: span 1;
+  }
+}
+
+.controls__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.result-count {
+  margin: 0;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.result-count strong {
+  font-size: 1.05rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.copy-status {
+  min-height: 1.2rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.825rem;
+  color: var(--text-muted);
+}
+
+/* ----------------------------------------------------------------- table */
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.table-scroll:focus-visible {
+  outline-offset: -2px;
+}
+
+table.songs {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.songs thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.55rem 0.85rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+
+.sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sort:hover {
+  color: var(--accent);
+}
+
+.sort__mark {
+  font-size: 0.7em;
+  opacity: 0.65;
+}
+
+.songs tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.songs tbody tr:last-child {
+  border-bottom: none;
+}
+
+.songs tbody tr:hover {
+  background: var(--surface);
+}
+
+.songs td,
+.songs tbody th {
+  padding: 0.6rem 0.85rem;
+  vertical-align: top;
+  text-align: left;
+  font-weight: 400;
+}
+
+/* Songs released on more than one album are the point of this site, so the
+   row carries a standing accent as well as the count and the chips. */
+.songs tbody tr.is-multi {
+  background: color-mix(in srgb, var(--accent-bg) 55%, transparent);
+}
+
+.songs tbody tr.is-multi:hover {
+  background: var(--accent-bg);
+}
+
+.songs tbody tr.is-multi .cell-song {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.cell-song {
+  width: 32%;
+  min-width: 14rem;
+}
+
+.song-title {
+  display: block;
+  font-weight: 550;
+  color: var(--text);
+}
+
+.song-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.song-marks:empty {
+  display: none;
+}
+
+.song-note {
+  display: block;
+  max-width: 46ch;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.badge--cover {
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.badge--confidence {
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+}
+
+.badge--confidence[data-level='low'],
+.badge--confidence[data-level='unverified'] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ------------------------------------------------------------ album cell */
+
+.cell-albums {
+  width: 44%;
+  min-width: 16rem;
+}
+
+.album-count {
+  display: inline-block;
+  margin-bottom: 0.3rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  padding: 0.12rem 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+}
+
+tr.is-multi .chip {
+  border-color: var(--accent);
+}
+
+.no-album {
+  font-size: 0.825rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------- year and type */
+
+.cell-year {
+  width: 6rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cell-type {
+  width: 9rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.08rem 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: 2px;
+  white-space: nowrap;
+}

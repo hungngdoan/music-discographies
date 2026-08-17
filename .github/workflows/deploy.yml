@@ -1,0 +1,69 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it midway.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Validate data against schemas
+        run: npm run validate
+
+      - name: Check the generated model matches the schemas
+        run: |
+          npm run types:gen
+          git diff --exit-code -- src/app/models/discography.model.ts
+
+      # Sets --base-href /music-discographies/ and copies index.html to 404.html.
+      # Both are required for a project site on a subpath; see the README.
+      - name: Build
+        run: npm run build:gh
+
+      - name: Verify the SPA fallback exists
+        run: |
+          out=dist/music-discographies/browser
+          test -f "$out/404.html" || { echo "::error::404.html missing; deep links would break"; exit 1; }
+          cmp "$out/index.html" "$out/404.html" || { echo "::error::404.html differs from index.html"; exit 1; }
+          grep -q '<base href="/music-discographies/">' "$out/index.html" \
+            || { echo "::error::base href is not /music-discographies/"; exit 1; }
+          test -f "$out/assets/data/index.json" || { echo "::error::data assets were not emitted"; exit 1; }
+          echo "SPA fallback, base href and data assets all present."
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/music-discographies/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,6 @@
+node_modules
+dist
+build
+.angular
+package-lock.json
+src/app/models/discography.model.ts

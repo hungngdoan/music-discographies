@@ -1,0 +1,72 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10;
+  padding: 0.6rem 1rem;
+  background: var(--bg);
+  border: 2px solid var(--focus);
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 1.75rem 0 1.5rem;
+}
+
+.wordmark {
+  display: inline-block;
+  font-size: 1.15rem;
+  font-weight: 620;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.wordmark:hover {
+  color: var(--accent);
+}
+
+.tagline {
+  margin: 0.4rem 0 0;
+  max-width: 60ch;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Only the block axis: this element also carries .shell, whose inline padding
+   must survive. A shorthand here would out-specify .shell and flatten it. */
+main {
+  flex: 1 0 auto;
+  padding-block: 2rem 3.5rem;
+}
+
+main:focus {
+  outline: none;
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 0 2rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.site-footer p {
+  margin: 0 0 0.5rem;
+  max-width: 78ch;
+}
+
+.site-footer p:last-child {
+  margin-bottom: 0;
+}
