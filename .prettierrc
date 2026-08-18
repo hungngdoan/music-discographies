@@ -1,15 +1,16 @@
 {
   "printWidth": 100,
   "singleQuote": true,
+  "plugins": ["prettier-plugin-astro"],
   "overrides": [
     {
-      "files": "*.html",
+      "files": "*.astro",
       "options": {
-        "parser": "angular"
+        "parser": "astro"
       }
     },
     {
-      "files": "src/assets/data/**/*.json",
+      "files": "src/content/**/*.json",
       "options": {
         "printWidth": 100,
         "tabWidth": 2

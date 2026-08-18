@@ -1,9 +1,9 @@
 /** Serialises rows to RFC 4180 CSV. Fields containing a quote, comma, CR or LF get quoted. */
-export function toCsv(rows: readonly (readonly string[])[]): string {
+export function toCsv(rows) {
   return rows.map((row) => row.map(escapeField).join(',')).join('\r\n');
 }
 
-function escapeField(value: string): string {
+function escapeField(value) {
   return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
 }
 
@@ -12,7 +12,7 @@ function escapeField(value: string): string {
  * which GitHub Pages and localhost both provide, but the textarea fallback keeps
  * the button working when the page is opened over plain http from a LAN address.
  */
-export async function copyToClipboard(text: string): Promise<boolean> {
+export async function copyToClipboard(text) {
   try {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(text);

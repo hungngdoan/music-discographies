@@ -1,6 +1,5 @@
 node_modules
 dist
 build
-.angular
+.astro
 package-lock.json
-src/app/models/discography.model.ts

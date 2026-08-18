@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Exports src/assets/data/*.json to a normalised SQLite database at
+// Exports src/content/*.json to a normalised SQLite database at
 // build/discography.db (gitignored). Uses node:sqlite, so there is no native
 // dependency to compile.
 //
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DATA_DIR = join(ROOT, 'src/assets/data');
+const DATA_DIR = join(ROOT, 'src/content');
 const OUT_DIR = join(ROOT, 'build');
 const OUT = join(OUT_DIR, 'discography.db');
 

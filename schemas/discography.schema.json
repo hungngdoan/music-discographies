@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hungngdoan.github.io/music-discographies/schemas/discography.schema.json",
   "title": "Discography",
-  "description": "One artist's complete catalogue. One file per artist, loaded at runtime from src/assets/data/{id}.json.",
+  "description": "One artist's complete catalogue. One file per artist, loaded from src/content/{id}.json.",
   "type": "object",
   "additionalProperties": false,
   "required": ["artist", "eras", "albums", "songs"],

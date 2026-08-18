@@ -4,14 +4,14 @@ Per-artist provenance. Add a section here whenever you add an artist file.
 
 The narrative research notes each dataset was built from live in
 `docs/source-notes/`. Those files are historical records of the compilation
-pass. **The JSON under `src/assets/data/` is canonical.** If a source note and
+pass. **The JSON under `src/content/` is canonical.** If a source note and
 the JSON disagree, the JSON wins and the note is stale.
 
 ---
 
 ## Maroon 5
 
-- File: `src/assets/data/maroon-5.json`
+- File: `src/content/maroon-5.json`
 - Source notes: `docs/source-notes/maroon-5.md`
 - Entries: 215 (148 under the Maroon 5 name, 64 Kara's Flowers, 3 unreleased)
 - Compiled: August 2026
