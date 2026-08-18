@@ -37,12 +37,19 @@ const withArtistData = (loadData) => {
         default: (props) => <module.default {...props} data={data.default ?? data} />,
       }))
       // Drop the memo on failure so this layer is not a second cache on top of
-      // the browser's. Note it does not buy a working retry: once a dynamic
-      // import fails, the HTML spec leaves that module recorded as errored in
-      // the module map, so re-importing the same URL re-throws without issuing
-      // another request. Measured: one network attempt before the failure, one
-      // after. A genuinely failed chunk needs the reload that ArtistBoundary
-      // offers, which is why that boundary exists.
+      // the browser's.
+      //
+      // Do not assume this buys a working retry. The HTML Standard now removes
+      // module-map entries after network and non-OK HTTP failures, so a later
+      // import of the same URL is permitted to fetch again, but engines lag the
+      // spec and parse or evaluation failures stay cached either way. Measured
+      // in Chromium here: after a failed fetch the request count stayed at one
+      // across the retry, so nothing was re-requested.
+      //
+      // The recovery that always works is the reload ArtistBoundary offers,
+      // which is also the only option for the case that motivated it: a
+      // content-hashed chunk deleted by a deploy is gone from the server, and
+      // no amount of retrying will bring that URL back.
       .catch((error) => {
         pending = undefined;
         throw error;

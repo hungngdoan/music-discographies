@@ -201,6 +201,7 @@ export default function ArtistDetail({ data, onBack }) {
       <header className="artist-header">
         <p className="crumb">
           <a
+            data-testid="back-to-list"
             href="#"
             onClick={(event) => {
               event.preventDefault();
@@ -332,18 +333,28 @@ export default function ArtistDetail({ data, onBack }) {
         </div>
 
         <div className="controls__bar">
-          <p className="result-count" role="status" aria-live="polite">
+          <p className="result-count" data-testid="result-count" role="status" aria-live="polite">
             <strong>{rows.length}</strong> of {songs.length} songs
             {hasActiveFilter && <span className="muted"> after filtering</span>}
           </p>
 
           <div className="actions">
             {hasActiveFilter && (
-              <button type="button" className="button" onClick={clearFilters}>
+              <button
+                type="button"
+                className="button"
+                data-testid="clear-filters"
+                onClick={clearFilters}
+              >
                 Clear filters
               </button>
             )}
-            <button type="button" className="button button--primary" onClick={copyCsv}>
+            <button
+              type="button"
+              className="button button--primary"
+              data-testid="copy-csv"
+              onClick={copyCsv}
+            >
               Copy as CSV
             </button>
           </div>
@@ -357,7 +368,12 @@ export default function ArtistDetail({ data, onBack }) {
       {rows.length === 0 ? (
         <p className="status">
           No song matches these filters.{' '}
-          <button type="button" className="link-button" onClick={clearFilters}>
+          <button
+            type="button"
+            className="link-button"
+            data-testid="clear-filters-empty"
+            onClick={clearFilters}
+          >
             Clear them
           </button>{' '}
           to see all {songs.length} songs.
@@ -365,11 +381,12 @@ export default function ArtistDetail({ data, onBack }) {
       ) : (
         <div
           className="table-scroll"
+          data-testid="table-scroll"
           tabIndex={0}
           role="region"
           aria-label={`${artist.name} songs`}
         >
-          <table className="songs">
+          <table className="songs" data-testid="song-table">
             <caption className="visually-hidden">
               {rows.length} songs, sorted by {sortKey}{' '}
               {sortDir === 'asc' ? 'ascending' : 'descending'}. Songs released on more than one
@@ -378,7 +395,12 @@ export default function ArtistDetail({ data, onBack }) {
             <thead>
               <tr>
                 <th scope="col" aria-sort={ariaSort('title')}>
-                  <button type="button" className="sort" onClick={() => toggleSort('title')}>
+                  <button
+                    type="button"
+                    className="sort"
+                    data-testid="sort-title"
+                    onClick={() => toggleSort('title')}
+                  >
                     Song
                     <span className="sort__mark" aria-hidden="true">
                       {sortKey === 'title' ? (sortDir === 'asc' ? '▲' : '▼') : '↕'}
@@ -387,7 +409,12 @@ export default function ArtistDetail({ data, onBack }) {
                 </th>
                 <th scope="col">Album(s)</th>
                 <th scope="col" aria-sort={ariaSort('year')}>
-                  <button type="button" className="sort" onClick={() => toggleSort('year')}>
+                  <button
+                    type="button"
+                    className="sort"
+                    data-testid="sort-year"
+                    onClick={() => toggleSort('year')}
+                  >
                     Year
                     <span className="sort__mark" aria-hidden="true">
                       {sortKey === 'year' ? (sortDir === 'asc' ? '▲' : '▼') : '↕'}
@@ -399,7 +426,11 @@ export default function ArtistDetail({ data, onBack }) {
             </thead>
             <tbody>
               {rows.map((song) => (
-                <tr key={song.id} className={song.albums.length > 1 ? 'is-multi' : undefined}>
+                <tr
+                  key={song.id}
+                  data-testid="song-row"
+                  className={song.albums.length > 1 ? 'is-multi' : undefined}
+                >
                   <th scope="row" className="cell-song">
                     <span className="song-title">{song.title}</span>
                     <span className="song-marks">

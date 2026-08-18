@@ -34,9 +34,16 @@ jobs:
       - name: Validate data against schemas
         run: npm run validate
 
-      # `base` in astro.config.mjs puts the build under /music-discographies/.
-      - name: Build
-        run: npm run build
+      - name: Install the browser Playwright drives
+        run: npx playwright install --with-deps chromium
+
+      # This builds the site itself, through playwright.config.mjs webServer,
+      # and runs every assertion against that build. `base` in astro.config.mjs
+      # puts the output under /music-discographies/. Do not add a separate
+      # build step: a second build is not guaranteed to be the one the tests
+      # graded, and the artefact uploaded below must be the tested one.
+      - name: Build and run browser tests
+        run: npm test
 
       - name: Verify the build output
         run: |
@@ -46,6 +53,14 @@ jobs:
           grep -q '/music-discographies/' "$out/index.html" \
             || { echo "::error::assets are not prefixed with the /music-discographies/ base"; exit 1; }
           echo "index.html, 404.html and the base prefix are all present."
+
+      - name: Upload the Playwright report when tests fail
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
 
       - uses: actions/upload-pages-artifact@v3
         with:

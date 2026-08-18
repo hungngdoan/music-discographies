@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import './ArtistList.css';
 
@@ -8,6 +8,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 export default function ArtistList({ artists, updated, onOpen }) {
   const [filter, setFilter] = useState('');
+  const filterRef = useRef(null);
+
+  // The "Clear the filter" button lives inside the empty state it clears, so
+  // pressing it removes the element that has focus and drops the caret to
+  // <body>. Same self-removing-control problem as clearFilters in
+  // ArtistDetail, same fix: hand focus back to the input that is still there.
+  const clearFilter = () => {
+    setFilter('');
+    filterRef.current?.focus();
+  };
 
   const visible = useMemo(() => {
     const needle = filter.trim().toLowerCase();
@@ -29,6 +39,7 @@ export default function ArtistList({ artists, updated, onOpen }) {
         <label className="field">
           <span className="field__label">Filter artists</span>
           <input
+            ref={filterRef}
             type="search"
             name="artist-filter"
             autoComplete="off"
@@ -45,7 +56,12 @@ export default function ArtistList({ artists, updated, onOpen }) {
       {visible.length === 0 ? (
         <p className="status">
           No artist matches “{filter}”.{' '}
-          <button type="button" className="link-button" onClick={() => setFilter('')}>
+          <button
+            type="button"
+            className="link-button"
+            data-testid="clear-artist-filter"
+            onClick={clearFilter}
+          >
             Clear the filter
           </button>
         </p>
@@ -62,6 +78,7 @@ export default function ArtistList({ artists, updated, onOpen }) {
                   where the transition and the same query-drop happen in JS. */}
               <a
                 className="artist-card"
+                data-testid="artist-card"
                 href={`${base}/#${artist.id}`}
                 onClick={(event) => {
                   if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0)

@@ -98,31 +98,32 @@ export default function DiscographyBrowser() {
     if (here() !== target) window.history.pushState(null, '', target);
   };
 
+  // A view change unmounts whatever had focus, which drops the caret to
+  // <body>: keyboard users lose their place and screen readers announce
+  // nothing. Moving focus to the main region makes the new view the next thing
+  // read. <main> itself is never unmounted, so it is a stable target.
+  //
+  // Called from the navigation handlers rather than from an effect on
+  // artistId. An effect cannot tell a user's navigation apart from the initial
+  // hash being resolved on load, so it also fired for someone arriving on a
+  // deep link, stealing focus before they had touched anything and pushing the
+  // skip link out of reach of the first Tab.
+  const focusMain = () => mainRef.current?.focus();
+
   const openArtist = (artist) => {
     startTransition(() => setArtistId(artist.id));
     // Drops any query string along with the hash change. Filter state belongs
     // to the artist that was open, and carrying it onto a different catalogue
     // would silently apply an album filter that matches nothing.
     navigate(`${window.location.pathname}#${artist.id}`);
+    focusMain();
   };
 
   const showList = () => {
     startTransition(() => setArtistId(null));
     navigate(window.location.pathname);
+    focusMain();
   };
-
-  // Moving between views unmounts whatever had focus, which drops the caret to
-  // <body>: keyboard users lose their place and screen readers announce
-  // nothing. Focusing the main region instead makes the new view the next
-  // thing read. Skipped on first paint so the page does not steal focus on load.
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    mainRef.current?.focus();
-  }, [artistId]);
 
   const artist = artistId ? artistById.get(artistId) : null;
 
@@ -133,10 +134,11 @@ export default function DiscographyBrowser() {
           artist list, so this moves focus directly instead. */}
       <a
         className="skip-link"
+        data-testid="skip-link"
         href="#main"
         onClick={(event) => {
           event.preventDefault();
-          mainRef.current?.focus();
+          focusMain();
           mainRef.current?.scrollIntoView();
         }}
       >
@@ -147,6 +149,7 @@ export default function DiscographyBrowser() {
         <div className="shell">
           <a
             className="wordmark"
+            data-testid="wordmark"
             href="#"
             onClick={(event) => {
               event.preventDefault();
