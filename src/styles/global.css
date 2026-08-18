@@ -50,9 +50,13 @@
 /* ------------------------------------------------------------------ base */
 
 /* Tailwind's Preflight already sets this. Stated again because no utility
-   class in this project is Tailwind's, so the day Tailwind is dropped this
-   stylesheet must not silently lose the border-box model and blow out every
-   padded container. */
+   class in this project is Tailwind's, so the border-box model should not rest
+   on a dependency nothing else uses.
+
+   This is not a licence to delete Tailwind without checking. Preflight still
+   supplies other behaviour this file relies on, including anchor underline
+   defaults, the WebKit search-input appearance reset and mobile
+   text-size-adjust. Cutting it needs a full reset audit, not just this rule. */
 *,
 *::before,
 *::after {

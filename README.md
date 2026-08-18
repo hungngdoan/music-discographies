@@ -20,6 +20,7 @@ against its stated scope; see `docs/SOURCES.md` for the one known gap.
 - React 18 as a single hydrated island
 - Tailwind CSS 3 for layout, component stylesheets for everything else
 - JSON Schema plus a custom validator, enforced in CI and on pre-commit
+- Playwright for browser tests, run against the real build in CI
 - Deployed to GitHub Pages by GitHub Actions
 
 ---
@@ -36,12 +37,35 @@ npm start          # dev server at http://localhost:4210/music-discographies/
 | `npm start`            | Dev server on port 4210. See "Dev server port".                  |
 | `npm run build`        | Production build into `dist/`. This is what the workflow runs.   |
 | `npm run preview`      | Serves the built `dist/` exactly as Pages will.                  |
+| `npm test`             | Builds, then runs the browser suite against that build.          |
+| `npm run test:ui`      | The same suite in Playwright's interactive UI.                   |
 | `npm run validate`     | Validates the data against the schemas and the cross-file rules. |
 | `npm run db:export`    | Exports the data to `build/discography.db` (SQLite, gitignored). |
 | `npm run format`       | Prettier over the repo.                                          |
 | `npm run format:check` | Prettier in check mode, as CI runs it.                           |
 
 A husky pre-commit hook runs Prettier and `validate-data.mjs` on staged files.
+
+### Tests
+
+`npm test` builds the site and drives the built output in a real browser. It
+does not test a dev server: base-path rewriting, code splitting and the 404
+page only behave correctly in a production build, and those are the things
+most likely to break without anyone noticing.
+
+`playwright.config.mjs` sets `reuseExistingServer: false` on purpose. The usual
+`!process.env.CI` lets any preview server already on port 4210 satisfy the
+check, so the build never runs and the suite grades a stale `dist/`. If the
+port is busy the run now fails loudly instead. Stop your preview server before
+running the tests.
+
+`tests/browser.spec.mjs` selects elements through `data-testid` and form
+control names, never through class names, so restyling the site does not break
+the suite. If a redesign breaks a test, the behaviour changed, not the CSS.
+
+Its `regressions` block is one test per defect found in review. Each one was
+reproduced before it was fixed. Deleting a test there deletes the only thing
+stopping that bug from returning.
 
 ### Dev server port
 
