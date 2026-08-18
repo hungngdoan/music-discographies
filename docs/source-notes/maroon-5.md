@@ -2,7 +2,7 @@
 
 > **Source note, not the dataset.** This is the research document the Maroon 5
 > data was compiled from. The canonical machine-readable data is
-> `src/assets/data/maroon-5.json`, which is what the site reads and what CI
+> `src/content/maroon-5.json`, which is what the site reads and what CI
 > validates. Edit the JSON, not this file. If the two disagree, the JSON wins.
 
 **Version:** 1.0

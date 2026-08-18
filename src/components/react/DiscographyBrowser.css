@@ -1,0 +1,106 @@
+/* The page frame: skip link, masthead, main column and footer. Everything
+   inside the main column belongs to ArtistList or ArtistDetail. */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10;
+  padding: 0.6rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 0 0 3px 0;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  padding: 1.35rem 0;
+}
+
+.wordmark {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.wordmark:hover {
+  color: var(--accent);
+}
+
+.tagline {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+#main {
+  padding-top: 1.75rem;
+  padding-bottom: 3rem;
+  min-height: 60vh;
+}
+
+/* Set while a lazy artist chunk is in flight. The outgoing view stays fully
+   readable and only dims, because replacing it with a spinner would be a step
+   backwards from the content already on screen. */
+#main[data-pending='true'] {
+  opacity: 0.65;
+  transition: opacity 140ms ease;
+}
+
+#main:focus {
+  outline: none;
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 1.5rem 0;
+}
+
+.site-footer p {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+
+.site-footer p:last-child {
+  margin-bottom: 0;
+}
+
+/* The view crossfade. A keyed remount in DiscographyBrowser restarts this on
+   every switch between the artist list and an artist, which is the whole of
+   what framer-motion was doing here at 114 kB of JavaScript. */
+.view {
+  animation: view-in 180ms ease-out both;
+}
+
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view {
+    animation: none;
+  }
+
+  #main[data-pending='true'] {
+    transition: none;
+  }
+}

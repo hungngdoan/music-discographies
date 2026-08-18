@@ -123,7 +123,13 @@
 /* ----------------------------------------------------------------- table */
 
 .table-scroll {
-  overflow-x: auto;
+  /* overflow-x alone still makes this the sticky headers' scroll container,
+     but an unbounded one: it never scrolls vertically, so the headers slide
+     off with the page instead of pinning. Bounding the height gives them
+     something to stick to, which is what makes a 215-row table readable. */
+  max-height: min(75vh, 48rem);
+  overflow: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--border);
   border-radius: 3px;
 }
@@ -319,7 +325,7 @@ tr.is-multi .chip {
   color: var(--text-muted);
 }
 
-/* ------------------------------------------------------- year and type */
+/* -------------------------------------------------------- year and type */
 
 .cell-year {
   width: 6rem;

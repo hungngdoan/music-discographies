@@ -2,8 +2,8 @@
 
 Two JSON Schemas define the data and are enforced in CI:
 
-- `schemas/index.schema.json` for `src/assets/data/index.json`
-- `schemas/discography.schema.json` for `src/assets/data/{artist-id}.json`
+- `schemas/index.schema.json` for `src/content/index.json`
+- `schemas/discography.schema.json` for `src/content/{artist-id}.json`
 
 `src/app/models/discography.model.ts` is generated from those schemas with
 `npm run types:gen`. Never edit it by hand. CI regenerates it and fails if the
@@ -30,7 +30,7 @@ so a visitor never downloads an artist file they did not ask for.
 | `artists[].origin`    | string  | yes      | Must equal `artist.origin` in the target file.              |
 | `artists[].active`    | string  | yes      | Must equal `artist.active` in the target file.              |
 | `artists[].songCount` | integer | yes      | Must equal `songs.length` in the target file.               |
-| `artists[].file`      | string  | yes      | Filename relative to `src/assets/data/`.                    |
+| `artists[].file`      | string  | yes      | Filename relative to `src/content/`.                        |
 
 Key order is fixed: `updated`, `artists`; and within an entry `id`, `name`,
 `sortName`, `origin`, `active`, `songCount`, `file`.

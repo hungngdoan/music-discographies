@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<Base title="Page not found | Music Discographies">
+  <main class="shell" style="padding-top: 3rem; padding-bottom: 3rem;">
+    <div class="status status--error" role="alert">
+      <h1>Page not found</h1>
+      <p>There is nothing at this address.</p>
+      <p><a href={`${base}/`}>Back to the artist list</a></p>
+    </div>
+  </main>
+</Base>

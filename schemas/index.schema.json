@@ -46,7 +46,7 @@
         "file": {
           "type": "string",
           "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*\\.json$",
-          "description": "Filename relative to src/assets/data/."
+          "description": "Filename relative to src/content/."
         }
       }
     }

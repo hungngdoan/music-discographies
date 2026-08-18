@@ -1,4 +1,15 @@
-/* ---------------------------------------------------------------- tokens */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------- tokens
+
+   One palette, defined as custom properties rather than as a JS theme object.
+   goc-cua-hung keeps its palettes in config/themes.js because it has twelve of
+   them, one per tab, and has to swap the whole set at runtime. This site has a
+   single palette, so CSS variables are the smaller tool: they resolve during
+   the server render, survive hydration without a flash, and let the dark scheme
+   be a four-line media query instead of a second object to keep in sync.        */
 
 :root {
   --bg: #fffdf9;
@@ -38,14 +49,14 @@
 
 /* ------------------------------------------------------------------ base */
 
+/* Tailwind's Preflight already sets this. Stated again because no utility
+   class in this project is Tailwind's, so the day Tailwind is dropped this
+   stylesheet must not silently lose the border-box model and blow out every
+   padded container. */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -56,6 +67,13 @@ body {
   font-size: 16px;
   line-height: 1.65;
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  -webkit-font-feature-settings:
+    'kern' 1,
+    'liga' 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -87,6 +105,11 @@ a:hover {
   border-radius: 2px;
 }
 
+/* --------------------------------------------------------------- shared
+
+   Only the primitives reused across both views live here. Anything used by a
+   single component sits in that component's own stylesheet.                    */
+
 .shell {
   width: 100%;
   max-width: var(--shell-max);
@@ -107,7 +130,6 @@ a:hover {
   margin: -1px;
   padding: 0;
   overflow: hidden;
-  clip: rect(0 0 0 0);
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
@@ -116,8 +138,6 @@ a:hover {
 .muted {
   color: var(--text-muted);
 }
-
-/* ---------------------------------------------------------------- forms */
 
 .field {
   display: flex;
@@ -135,7 +155,6 @@ a:hover {
 }
 
 input[type='search'],
-input[type='text'],
 select {
   width: 100%;
   min-width: 0;
@@ -162,8 +181,6 @@ input[type='search']::placeholder {
 select {
   cursor: pointer;
 }
-
-/* --------------------------------------------------------------- buttons */
 
 .button {
   padding: 0.5rem 0.9rem;
@@ -208,8 +225,6 @@ select {
   text-decoration: underline;
   text-underline-offset: 0.16em;
 }
-
-/* --------------------------------------------------------------- status */
 
 .status {
   margin: 1.5rem 0;
