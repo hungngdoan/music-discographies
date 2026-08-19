@@ -31,8 +31,17 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
+      - name: Lint
+        run: npm run lint
+
       - name: Validate data against schemas
         run: npm run validate
+
+      # The SQLite exporter is not used by the site, so nothing else would
+      # notice it rotting. It exists to de-risk a future move off JSON, which
+      # is worth exactly nothing if it has quietly stopped working.
+      - name: Exercise the SQLite exporter
+        run: npm run db:export
 
       - name: Install the browser Playwright drives
         run: npx playwright install --with-deps chromium

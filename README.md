@@ -29,6 +29,11 @@ against its stated scope; see `docs/SOURCES.md` for the one known gap.
 
 ## Local development
 
+Requires Node `^20.3.0 || >=22.0.0`, which is what the toolchain actually
+supports. `.npmrc` sets `engine-strict=true`, so a wrong version fails at
+`npm ci` with a clear message rather than surfacing later as an opaque build
+error.
+
 ```bash
 npm ci
 npm start          # dev server at http://localhost:4210/music-discographies/
@@ -40,13 +45,27 @@ npm start          # dev server at http://localhost:4210/music-discographies/
 | `npm run build`        | Production build into `dist/`. This is what the workflow runs.   |
 | `npm run preview`      | Serves the built `dist/` exactly as Pages will.                  |
 | `npm test`             | Builds, then runs the browser suite against that build.          |
+| `npm run lint`         | ESLint. Mainly there for `react-hooks/exhaustive-deps`.          |
+| `npm run lint:fix`     | ESLint with `--fix`.                                             |
 | `npm run test:ui`      | The same suite in Playwright's interactive UI.                   |
 | `npm run validate`     | Validates the data against the schemas and the cross-file rules. |
 | `npm run db:export`    | Exports the data to `build/discography.db` (SQLite, gitignored). |
 | `npm run format`       | Prettier over the repo.                                          |
 | `npm run format:check` | Prettier in check mode, as CI runs it.                           |
 
-A husky pre-commit hook runs Prettier and `validate-data.mjs` on staged files.
+A husky pre-commit hook runs Prettier, ESLint and `validate-data.mjs` on staged
+files.
+
+### Linting
+
+Prettier owns formatting, so `eslint.config.mjs` enables nothing stylistic. It
+is here for one rule: **`react-hooks/exhaustive-deps`**, set to error. The
+codebase is hook-heavy, and stale closures and missing dependencies are exactly
+the class of bug it has already shipped twice. Prettier cannot see any of them.
+
+Astro frontmatter is parsed with `@typescript-eslint/parser` even though the
+project has no `.ts` files, because `interface Props` in a layout is
+TypeScript and the default parser rejects the keyword.
 
 ### Tests
 
