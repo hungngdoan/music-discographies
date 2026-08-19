@@ -4,6 +4,9 @@ import ArtistList from './ArtistList.jsx';
 import { artistById, artistRegistry, registryUpdated } from '../../config/artists.jsx';
 import './DiscographyBrowser.css';
 
+// Build-time constant, identical on the server and in the browser.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 // A lazy chunk that fails to arrive throws while rendering, and without a
 // boundary React unmounts the whole island: header, footer and the artist list
 // all disappear, not just the table. That is not a rare case. Chunk filenames
@@ -51,6 +54,26 @@ export default function DiscographyBrowser() {
   const [isPending, startTransition] = useTransition();
   const mainRef = useRef(null);
 
+  // The id the router last resolved. Kept in a ref rather than read from
+  // artistId so settle() can compare against it synchronously, before the
+  // transition it is about to start has committed.
+  const routedId = useRef(null);
+  // Set when a route change should move focus, consumed by the effect below
+  // once the new view has actually committed.
+  const pendingFocus = useRef(false);
+  const initialHashResolved = useRef(false);
+
+  /**
+   * The single place artistId changes. Everything routes through here so the
+   * focus bookkeeping cannot drift: a change that moves no view requests no
+   * focus, which is what stops a stale flag firing on some later navigation.
+   */
+  const settle = (nextId, { focus }) => {
+    if (focus && nextId !== routedId.current) pendingFocus.current = true;
+    routedId.current = nextId;
+    startTransition(() => setArtistId(nextId));
+  };
+
   // The open artist lives in the URL hash, so a refresh or a shared link
   // restores it and back/forward walk through previously opened artists.
   // Applied after mount rather than in the initial state, so the hydrated
@@ -76,7 +99,13 @@ export default function DiscographyBrowser() {
       // An unknown id falls back to the list rather than an error page: a stale
       // or hand-edited link degrades to "here is everything" instead of a dead end.
       const next = artistById.has(hash) ? hash : null;
-      startTransition(() => setArtistId(next));
+      // Every hash-driven change except the very first is a user navigation:
+      // Back, Forward, or an in-page hash link. Those move the view and so
+      // must move focus. The first is just this page resolving its own URL on
+      // load, and stealing focus there would push the skip link out of reach
+      // of the first Tab.
+      settle(next, { focus: initialHashResolved.current });
+      initialHashResolved.current = true;
     };
 
     applyHash();
@@ -103,26 +132,28 @@ export default function DiscographyBrowser() {
   // nothing. Moving focus to the main region makes the new view the next thing
   // read. <main> itself is never unmounted, so it is a stable target.
   //
-  // Called from the navigation handlers rather than from an effect on
-  // artistId. An effect cannot tell a user's navigation apart from the initial
-  // hash being resolved on load, so it also fired for someone arriving on a
-  // deep link, stealing focus before they had touched anything and pushing the
-  // skip link out of reach of the first Tab.
-  const focusMain = () => mainRef.current?.focus();
+  // This runs after the commit, not inside the handler. Focusing in the
+  // handler moves the caret while the outgoing view is still on screen, so
+  // assistive technology can read the old content; and it covers only clicks,
+  // leaving Back, Forward and hash links to drop focus on <body>. settle()
+  // marks the intent, this consumes it once the new view exists.
+  useEffect(() => {
+    if (!pendingFocus.current) return;
+    pendingFocus.current = false;
+    mainRef.current?.focus();
+  }, [artistId]);
 
   const openArtist = (artist) => {
-    startTransition(() => setArtistId(artist.id));
+    settle(artist.id, { focus: true });
     // Drops any query string along with the hash change. Filter state belongs
     // to the artist that was open, and carrying it onto a different catalogue
     // would silently apply an album filter that matches nothing.
     navigate(`${window.location.pathname}#${artist.id}`);
-    focusMain();
   };
 
   const showList = () => {
-    startTransition(() => setArtistId(null));
+    settle(null, { focus: true });
     navigate(window.location.pathname);
-    focusMain();
   };
 
   const artist = artistId ? artistById.get(artistId) : null;
@@ -138,7 +169,7 @@ export default function DiscographyBrowser() {
         href="#main"
         onClick={(event) => {
           event.preventDefault();
-          focusMain();
+          mainRef.current?.focus();
           mainRef.current?.scrollIntoView();
         }}
       >
@@ -150,7 +181,11 @@ export default function DiscographyBrowser() {
           <a
             className="wordmark"
             data-testid="wordmark"
-            href="#"
+            /* A real URL, not "#". Before hydration a click follows the href
+               natively, and "#" pushed a junk history entry that made Back
+               appear dead. This lands on the artist list, which is exactly
+               where the handler would have gone. */
+            href={`${base}/`}
             onClick={(event) => {
               event.preventDefault();
               showList();

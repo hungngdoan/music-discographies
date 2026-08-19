@@ -90,7 +90,10 @@ export default function ArtistList({ artists, updated, onOpen }) {
                 // itself usually has nothing to wait for. pointerenter covers
                 // mouse and pen, focus covers keyboard, and pointerdown is the
                 // last chance on touch, where there is no hover but a press
-                // still precedes the click. Repeat calls are free.
+                // still precedes the click. Repeat calls are free while the
+                // load is pending or already resolved; after a rejection the
+                // registry drops its memo, so the next call starts real work
+                // again.
                 onPointerEnter={() => artist.preload?.()}
                 onPointerDown={() => artist.preload?.()}
                 onFocus={() => artist.preload?.()}
