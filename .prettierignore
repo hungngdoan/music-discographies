@@ -3,3 +3,7 @@ dist
 build
 .astro
 package-lock.json
+
+# license texts are verbatim legal documents, never reformat them
+LICENSE
+LICENSE-CODE

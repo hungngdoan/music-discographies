@@ -263,17 +263,34 @@ anchor underline defaults, the WebKit search-input appearance reset and mobile
 
 ## Licensing
 
-**This repository carries no license file, by choice.** No `LICENSE`, no
-`COPYING`. All rights are therefore reserved by default and no reuse rights are
-granted to anyone.
+This repository is split: **the data and the code carry different licenses**,
+because they have different origins.
 
-If this repo is ever made public and you want the data reusable, that decision
-needs making explicitly: the factual content is compiled from Wikipedia, which
-is CC BY-SA. Song titles, album names, years and credits are facts and are not
-themselves copyrightable, but the selection and arrangement of a compiled list
-can attract database rights in the EU and UK. `docs/source-notes/maroon-5.md`
-records the original recommendation. That is a decision to make deliberately,
-not a default to drift into.
+| What                                                          | License      | File           |
+| :------------------------------------------------------------ | :----------- | :------------- |
+| The data (`src/content/`) and the research notes (`docs/`)    | CC BY-SA 4.0 | `LICENSE`      |
+| Everything else: the site, the scripts, the tests, the config | MIT          | `LICENSE-CODE` |
+
+**Why CC BY-SA 4.0 for the data.** The factual content is compiled from
+Wikipedia, which is CC BY-SA. Song titles, album names, years, track numbers
+and credits are facts and carry no copyright, but the _selection and
+arrangement_ of a compiled list can attract sui generis database rights in the
+EU and UK. Matching the upstream license settles that question instead of
+inviting it, and CC BY-SA 4.0 grants those database rights explicitly in
+Section 4. `docs/source-notes/maroon-5.md` records this recommendation.
+
+**Attribution notice, for anyone reusing the data:**
+
+> This dataset lists song titles, album names, and release years for Maroon 5.
+> Factual data is compiled from Wikipedia and public discography sources
+> including Discogs, AllMusic, and Apple Music. Wikipedia-derived content is
+> used under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/);
+> this dataset is released under the same license.
+
+**Never add to this repository:** lyrics in whole or part, album cover art,
+band photographs, audio files or clips, long verbatim passages from Wikipedia
+articles or reviews, or scraped streaming-service data beyond what the relevant
+developer terms permit.
 
 Nothing in this repo is legal advice.
 
