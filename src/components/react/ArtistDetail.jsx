@@ -360,7 +360,7 @@ export default function ArtistDetail({ data, onBack }) {
           </div>
         </div>
 
-        <p className="copy-status" role="status" aria-live="polite">
+        <p className="copy-status" data-testid="copy-status" role="status" aria-live="polite">
           {copyStatus}
         </p>
       </section>
@@ -432,7 +432,9 @@ export default function ArtistDetail({ data, onBack }) {
                   className={song.albums.length > 1 ? 'is-multi' : undefined}
                 >
                   <th scope="row" className="cell-song">
-                    <span className="song-title">{song.title}</span>
+                    <span className="song-title" data-testid="song-title">
+                      {song.title}
+                    </span>
                     <span className="song-marks">
                       {song.isCover && (
                         <span className="badge badge--cover">
@@ -448,7 +450,7 @@ export default function ArtistDetail({ data, onBack }) {
                     {song.notes && <span className="song-note">{song.notes}</span>}
                   </th>
 
-                  <td className="cell-albums">
+                  <td className="cell-albums" data-testid="song-albums">
                     {song.albums.length > 0 ? (
                       <>
                         {song.albums.length > 1 && (
@@ -469,8 +471,10 @@ export default function ArtistDetail({ data, onBack }) {
                     )}
                   </td>
 
-                  <td className="cell-year">{song.year === null ? 'n/a' : song.year}</td>
-                  <td className="cell-type">
+                  <td className="cell-year" data-testid="song-year">
+                    {song.year === null ? 'n/a' : song.year}
+                  </td>
+                  <td className="cell-type" data-testid="song-type">
                     <span className="tag">{song.type}</span>
                   </td>
                 </tr>

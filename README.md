@@ -18,7 +18,9 @@ against its stated scope; see `docs/SOURCES.md` for the one known gap.
 
 - Astro 5, static output, one prerendered page
 - React 18 as a single hydrated island
-- Tailwind CSS 3 for layout, component stylesheets for everything else
+- Hand-written CSS: tokens in `global.css`, one stylesheet per component
+- Tailwind CSS 3 is installed but no utility class is used; it is kept only for
+  its Preflight reset (see "Tailwind" below)
 - JSON Schema plus a custom validator, enforced in CI and on pre-commit
 - Playwright for browser tests, run against the real build in CI
 - Deployed to GitHub Pages by GitHub Actions
@@ -60,12 +62,20 @@ port is busy the run now fails loudly instead. Stop your preview server before
 running the tests.
 
 `tests/browser.spec.mjs` selects elements through `data-testid` and form
-control names, never through class names, so restyling the site does not break
-the suite. If a redesign breaks a test, the behaviour changed, not the CSS.
+control names, so restyling the site does not break the suite. A few structural
+selectors remain on purpose (`h1`, `thead th`, `astro-island`) because they
+assert document semantics rather than presentation.
 
-Its `regressions` block is one test per defect found in review. Each one was
-reproduced before it was fixed. Deleting a test there deletes the only thing
-stopping that bug from returning.
+Its `regressions` block is one test per defect found in review, each intended
+to fail if its fix is reverted. That property is not free: three of them
+originally passed against the reverted code, because an assertion about the
+_absence_ of a failure proves nothing unless the code has been given time to
+fail. They are now verified by mutation: revert the fix, and the test goes red.
+Anything added there deserves the same check.
+
+`hydrated()` is why several of them work. Astro ships the island with an `ssr`
+attribute and drops it on hydration; without waiting for that, a test can read
+prerendered HTML and finish before any client code runs.
 
 ### Dev server port
 
@@ -96,7 +106,16 @@ root. `base: '/music-discographies'` in `astro.config.mjs` is what makes that
 work: Astro rewrites every asset and script URL to sit under that prefix at
 build time.
 
-If the repo is ever renamed, that one string must change.
+If the repo is ever renamed, `base` is the source of truth, but it is not the
+only place the path appears:
+
+| Where                          | What                                                                     |
+| :----------------------------- | :----------------------------------------------------------------------- |
+| `astro.config.mjs`             | `base`. The source of truth.                                             |
+| `playwright.config.mjs`        | Imports `base` from `astro.config.mjs`, so it follows automatically.     |
+| `tests/browser.spec.mjs`       | `BASE_PATH`, asserted against rendered `href`s. Must be updated by hand. |
+| `.github/workflows/deploy.yml` | The `grep` in "Verify the build output". Must be updated by hand.        |
+| `README.md`                    | The live-site URL above.                                                 |
 
 There is no SPA fallback to maintain and no `404.html` to keep in sync. The
 open artist lives in the URL **hash**, and a hash never reaches the server, so
@@ -139,8 +158,11 @@ pointer down and focus, so the chunk is usually already there by the time the
 click lands. Repeat calls are free: a dynamic import resolves from the module
 cache after the first.
 
-The effect is that opening one artist downloads one artist. Adding the
-hundredth artist does not change what the first ninety-nine cost to load.
+The effect is that opening one artist downloads one artist: the hundredth
+artist adds a chunk the other ninety-nine never fetch. The entry chunk is not
+perfectly flat, though. `index.json` metadata and Vite's generated loader map
+each grow by one entry per artist, so first paint creeps by a few bytes. What
+stays constant is that no artist's data loads until it is opened.
 
 ### URL state
 
@@ -221,6 +243,18 @@ any album title on a song that is missing from `albums[]`.
 - The search input is debounced at 150ms before it reaches the URL.
 - View changes are CSS animations, not a JavaScript animation library. A
   library would have added roughly 114 kB to the entry chunk to fade one panel.
+
+### Tailwind
+
+Tailwind is a dependency, but **no Tailwind utility class is used anywhere**;
+every class in the JSX resolves to hand-written CSS. It is retained solely for
+Preflight, its base reset, and because a future UI pass may want the utilities.
+
+Removing it is therefore not a one-line change. `global.css` restates
+`box-sizing: border-box` so that much is safe, but Preflight also supplies
+anchor underline defaults, the WebKit search-input appearance reset and mobile
+`text-size-adjust`. Cutting it needs a full reset audit.
+
 - The song table is a plain `<table>`. Above roughly **500 songs for a single
   artist**, replace it with a virtual scroller. Maroon 5 is 215, so a plain
   table is correct today. This is the trigger to revisit, not a TODO.

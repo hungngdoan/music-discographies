@@ -8,10 +8,13 @@ import indexData from '../content/index.json';
 //
 // Vite resolves this glob at build time into a static map of dynamic imports,
 // one chunk per artist file. Nothing is requested until a loader is actually
-// called, so reading one artist never downloads the rest of the collection, and
-// adding the hundredth artist does not grow the first paint of the ninety-nine
-// others. A bare `import('../content/' + file)` would not survive bundling; the
-// glob is what keeps the paths statically analysable.
+// called, so reading one artist never downloads the rest of the collection: the
+// hundredth artist adds a chunk the other ninety-nine never fetch. The entry
+// chunk is not perfectly flat, though. index.json metadata and Vite's generated
+// loader map both grow by one entry per artist, so first paint creeps by a few
+// bytes each time; what stays constant is that no artist's data is loaded until
+// it is opened. A bare `import('../content/' + file)` would not survive
+// bundling; the glob is what keeps the paths statically analysable.
 //
 // index.json is excluded rather than filtered afterwards: left in, it would be
 // bundled a second time as its own unreachable chunk, since a glob entry that

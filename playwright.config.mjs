@@ -1,7 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import astroConfig from './astro.config.mjs';
+
 const PORT = 4210;
-const BASE_URL = `http://localhost:${PORT}/music-discographies/`;
+// Derived from astro.config.mjs rather than repeated, so renaming the repo is
+// one edit there instead of a hunt through the test config as well.
+const BASE_URL = `http://localhost:${PORT}${astroConfig.base.replace(/\/?$/, '/')}`;
 
 export default defineConfig({
   testDir: './tests',
@@ -27,13 +31,22 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
 
-  // One browser on purpose. This is a static reference site with no
-  // browser-specific code; a second engine would double CI time to re-test the
-  // same assertions. Add one here the day a real cross-browser bug appears.
+  // Chromium only, as an accepted limit rather than a claim of safety. The
+  // suite does touch engine-sensitive behaviour: the async Clipboard API,
+  // position: sticky inside a scroll container, focus and history semantics,
+  // and dynamic-import failure caching. None of that is verified on Gecko or
+  // WebKit. Adding an engine is the fix if a cross-browser bug ever appears;
+  // until then the cost of doubling CI is not obviously worth it for a static
+  // reference site.
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
+  // A retry rescues a genuinely flaky infrastructure blip, but on its own it
+  // also quietly launders a real race into a green "flaky" run. failOnFlakyTests
+  // keeps the retry and still fails the build when one is used, so a race shows
+  // up as a red CI rather than a passing badge nobody looks at.
   retries: process.env.CI ? 1 : 0,
+  failOnFlakyTests: Boolean(process.env.CI),
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],
 });
